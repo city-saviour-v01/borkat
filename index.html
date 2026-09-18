@@ -863,8 +863,9 @@
 
     if(result==='win'){
       overScr.classList.add('win');
-      overTitle.textContent = '\u2605 city secured \u2605';
-      finalStats.innerHTML = 'you did it.';
+      overTitle.textContent = 'city saved';
+ finalStats.innerHTML = 'your help will be remembered.';
+      
       document.getElementById('retryBtn').textContent = 'play again';
       playVictory();
       setTimeout(spawnWinBurst, 100);
