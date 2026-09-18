@@ -719,7 +719,7 @@
     el.style.top = startY+'px';
     arena.appendChild(el);
 
-    const heli = { el, x:startX, y:startY, speed: 1.9 + Math.random()*1.2 + kills*0.22, alive:true };
+    const heli = { el, x:startX, y:startY, speed: 1.9 + Math.random()*1.2 + kills*0.35, alive:true };
     helis.push(heli);
     el.addEventListener('click', (e)=>{ e.stopPropagation(); handleShot(heli); });
   }
