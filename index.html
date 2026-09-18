@@ -607,60 +607,28 @@
     requestAnimationFrame(move);
   }
 
-  function spawnBird(){
+function spawnBird(){
   if(!running) return;
-
   const b = document.createElement('div');
-  b.className='bird';
-  b.textContent='˅';
-
+  b.className='bird'; b.textContent='˅';
   const top = 6+Math.random()*10;
   b.style.top = top+'%';
   b.style.left = '-20px';
-
   skyDecor.appendChild(b);
-
   if(Math.random()<0.7) playBirdChirp();
-
   const dur = 7000+Math.random()*3000;
   const arenaW = arena.clientWidth;
   const start = performance.now();
 
   function move(now){
     if(!b.isConnected) return;
-
     const p = Math.min(1,(now-start)/dur);
-
     b.style.left = (-20 + p*(arenaW+40)) + 'px';
-
-    if(p<1){
-      requestAnimationFrame(move);
-    }else{
-      b.remove();
-    }
+    if(p<1) requestAnimationFrame(move);
+    else b.remove();
   }
 
   requestAnimationFrame(move);
-}
-
-
-/* ================================
-   BIRD FLOCK
-   5–10 birds fly together
-================================ */
-
-function spawnBirdGroup(){
-  if(!running) return;
-
-  const count = 5 + Math.floor(Math.random()*6);
-
-  for(let i=0; i<count; i++){
-    setTimeout(()=>{
-      if(running){
-        spawnBird();
-      }
-    }, i*120);
-  }
 }
 
   function spawnDecoyHeli(){
@@ -687,57 +655,13 @@ function spawnBirdGroup(){
   }
 
   function startAmbientLoops(){
-
-  /* Clear old background decorations */
-  clouds.innerHTML='';
-  skyDecor.innerHTML='';
-
-
-  /* ================================
-     CLOUDS
-  ================================= */
-
-  spawnCloud();
-  spawnCloud();
-
-  cloudTimer = setInterval(()=>{
-    spawnCloud();
-  }, 6000);
-
-
-  /* ================================
-     BIRDS
-     5–10 birds together
-  ================================= */
-
-  birdTimer = setInterval(()=>{
-
-    /* 70% chance to create a flock */
-    if(Math.random()<0.7){
-      spawnBirdGroup();
-    }
-
-  }, 18000);
-
-
-  /* ================================
-     BACKGROUND HELICOPTER
-     This is the decorative helicopter
-     that the player CANNOT shoot.
-  ================================= */
-
-  decoyTimer = setInterval(()=>{
-
-    if(Math.random()<0.5){
-      spawnDecoyHeli();
-    }
-
-  }, 20000);
-
-
-  /* First decorative helicopter */
+  clouds.innerHTML=''; skyDecor.innerHTML='';
+  spawnCloud(); spawnCloud();
+  cloudTimer = setInterval(spawnCloud, 6000);
+  birdTimer = setInterval(()=>{ if(Math.random()<0.6) spawnBird(); }, 13000);
+  decoyTimer = setInterval(()=>{ if(Math.random()<0.5) spawnDecoyHeli(); }, 20000);
   setTimeout(spawnDecoyHeli, 4000);
-}
+  }
   function stopAmbientLoops(){
     clearInterval(cloudTimer); clearInterval(birdTimer); clearInterval(decoyTimer);
   }
