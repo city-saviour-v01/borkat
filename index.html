@@ -117,14 +117,14 @@
   .haze{position:absolute; top:0; left:0; right:0; height:26%; background:linear-gradient(rgba(255,255,255,0.15), transparent); pointer-events:none;}
   .roofline{position:absolute; bottom:41.5%; width:100%; height:3px; background:#171b1e; opacity:0.6; pointer-events:none;}
   .rooftop-prop{
-  position:absolute;
-  bottom:8%;
-  z-index:21;
-  font-size:26px;
-  opacity:1;
-  filter:none;
-  pointer-events:none;
-}
+    position:absolute;
+    bottom:8%;
+    z-index:21;
+    font-size:26px;
+    opacity:1;
+    filter:none;
+    pointer-events:none;
+  }
 
   /* HUD */
   #hud{position:absolute; top:0; left:0; right:0; z-index:22; pointer-events:none; padding:14px 16px;}
@@ -160,6 +160,126 @@
   #player svg{width:auto; height:100%; overflow:visible; image-rendering:pixelated; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.45));}
   #player svg.recoil{animation:recoilAnim .18s ease-out;}
   @keyframes recoilAnim{0%{transform:translateX(0) rotate(0);}30%{transform:translateX(-8px) rotate(-3deg);}100%{transform:translateX(0) rotate(0);}}
+
+  /* ---------- GAME INTRO / LOBBY ---------- */
+  #gameIntro{
+    position:absolute;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.88);
+    color:#fff;
+    text-align:center;
+    pointer-events:none;
+  }
+
+  #gameIntro.show{
+    display:flex;
+  }
+
+  #introInstruction{
+    width:90%;
+    max-width:360px;
+    animation:introFadeIn .5s ease-out forwards;
+  }
+
+  .introSmall{
+    font-size:9px;
+    color:#ff9a9a;
+    letter-spacing:2px;
+    margin-bottom:12px;
+    text-transform:lowercase;
+  }
+
+  .introTitle{
+    color:var(--red);
+    font-size:clamp(22px,6vw,32px);
+    font-weight:800;
+    letter-spacing:2px;
+    margin-bottom:14px;
+    text-transform:lowercase;
+  }
+
+  .introText{
+    color:#ddd;
+    font-size:12px;
+    line-height:1.7;
+    max-width:280px;
+    margin:0 auto 30px;
+    text-transform:lowercase;
+  }
+
+  .introTarget{
+    position:relative;
+    display:inline-block;
+    font-size:55px;
+    margin-bottom:20px;
+  }
+
+  .targetPoint{
+    position:absolute;
+    left:50%;
+    top:75%;
+    transform:translate(-50%,-50%);
+    color:var(--red);
+    font-size:18px;
+    animation:targetPulse .8s ease-in-out infinite;
+  }
+
+  .introHint{
+    color:var(--red);
+    font-size:9px;
+    letter-spacing:2px;
+    text-transform:lowercase;
+  }
+
+  #introBegin{
+    display:none;
+    animation:introBegin .7s ease-out forwards;
+  }
+
+  .beginTitle{
+    color:var(--red);
+    font-size:clamp(27px,7.5vw,42px);
+    font-weight:900;
+    letter-spacing:1.5px;
+    text-transform:lowercase;
+  }
+
+  @keyframes introFadeIn{
+    from{
+      opacity:0;
+      transform:translateY(15px);
+    }
+    to{
+      opacity:1;
+      transform:translateY(0);
+    }
+  }
+
+  @keyframes targetPulse{
+    0%,100%{
+      transform:translate(-50%,-50%) scale(1);
+      opacity:.5;
+    }
+    50%{
+      transform:translate(-50%,-50%) scale(1.5);
+      opacity:1;
+    }
+  }
+
+  @keyframes introBegin{
+    from{
+      opacity:0;
+      transform:scale(.85);
+    }
+    to{
+      opacity:1;
+      transform:scale(1);
+    }
+  }
 
   /* ---------- GAME OVER / WIN ---------- */
   #gameover{justify-content:center;}
@@ -233,6 +353,7 @@
         </div>
       </div>
     </div>
+
     <div id="arena">
       <div class="haze"></div>
       <div id="clouds"></div>
@@ -243,6 +364,41 @@
       <div class="rooftop-prop" style="left:80%;">📩</div>
       <div class="rooftop-prop" style="left:44%; bottom:1%; font-size:18px; opacity:0.6;">━▬▬ι══════ﺤ</div>
       <div id="player"></div>
+    </div>
+
+    <!-- GAME INTRO / LOBBY -->
+    <div id="gameIntro">
+
+      <div id="introInstruction">
+
+        <div class="introSmall">incoming target detected</div>
+
+        <div class="introTitle">
+          how to destroy
+        </div>
+
+        <div class="introText">
+          tap just below the helicopter
+          to destroy your target.
+        </div>
+
+        <div class="introTarget">
+          :Drone:
+          <div class="targetPoint">●</div>
+        </div>
+
+        <div class="introHint">
+          tap here
+        </div>
+
+      </div>
+
+      <div id="introBegin">
+        <div class="beginTitle">
+          let's save the city
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -276,6 +432,7 @@
     game: document.getElementById('game'),
     gameover: document.getElementById('gameover')
   };
+
   function showScreen(name){
     Object.values(screens).forEach(s=>s.classList.remove('active'));
     screens[name].classList.add('active');
@@ -324,9 +481,9 @@
       }
     }
   }
+
   buildMenuSkyline(document.getElementById('menuSkyline'));
   buildMenuSkyline(document.getElementById('menuSkyline2'));
-
 
   /* ---------- PIXEL ART SPRITES ---------- */
   // Renders a string-map grid into crisp pixel SVG.
@@ -354,6 +511,7 @@
     K:'#0d0d0d', H:'#1f1a16', F:'#e8b48a', E:'#141414', C:'#f2f2f2',
     T:'#c02020', J:'#1c2431', P:'#12161d', S:'#1a1a1a', G:'#2c2c2c', B:'#5c4326'
   };
+
   const CHAR_ROWS = [
     '        KKKKKK          ',
     '       KHHHHHHK         ',
@@ -390,6 +548,7 @@
   const HELI_PAL = {
     K:'#0f1412', D:'#2f3a2c', M:'#46543f', L:'#5d6e52', G:'#c9e6f5', S:'#1a1a1a'
   };
+
   function heliRows(){
     return [
       '                                     ',
@@ -417,131 +576,129 @@
 
   function ensureAudio(){
     try{
-    if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
-    if(audioCtx.state==='suspended') audioCtx.resume();
-  
+      if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+      if(audioCtx.state==='suspended') audioCtx.resume();
     }catch(e){}
   }
 
   function startHeliSound(){
     try{
-    ensureAudio();
-    if(heliNodes) return;
-    const ctx = audioCtx;
-    const osc1 = ctx.createOscillator(); osc1.type='sawtooth'; osc1.frequency.value=45;
-    const osc2 = ctx.createOscillator(); osc2.type='square'; osc2.frequency.value=88;
-    const master = ctx.createGain(); master.gain.value=0.05;
-    const lfo = ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=9.5;
-    const lfoGain = ctx.createGain(); lfoGain.gain.value=0.035;
-    lfo.connect(lfoGain); lfoGain.connect(master.gain);
-    osc1.connect(master); osc2.connect(master); master.connect(ctx.destination);
-    osc1.start(); osc2.start(); lfo.start();
-    heliNodes = {osc1, osc2, lfo, master};
-  
+      ensureAudio();
+      if(heliNodes) return;
+      const ctx = audioCtx;
+      const osc1 = ctx.createOscillator(); osc1.type='sawtooth'; osc1.frequency.value=45;
+      const osc2 = ctx.createOscillator(); osc2.type='square'; osc2.frequency.value=88;
+      const master = ctx.createGain(); master.gain.value=0.05;
+      const lfo = ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=9.5;
+      const lfoGain = ctx.createGain(); lfoGain.gain.value=0.035;
+      lfo.connect(lfoGain); lfoGain.connect(master.gain);
+      osc1.connect(master); osc2.connect(master); master.connect(ctx.destination);
+      osc1.start(); osc2.start(); lfo.start();
+      heliNodes = {osc1, osc2, lfo, master};
     }catch(e){}
   }
+
   function stopHeliSound(){
     try{
-    if(!heliNodes) return;
-    try{ heliNodes.osc1.stop(); heliNodes.osc2.stop(); heliNodes.lfo.stop(); }catch(e){}
-    try{ heliNodes.master.disconnect(); }catch(e){}
-    heliNodes = null;
-  
+      if(!heliNodes) return;
+      try{ heliNodes.osc1.stop(); heliNodes.osc2.stop(); heliNodes.lfo.stop(); }catch(e){}
+      try{ heliNodes.master.disconnect(); }catch(e){}
+      heliNodes = null;
     }catch(e){}
   }
+
   function playGunfire(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    const dur = 0.07;
-    const bufferSize = Math.floor(ctx.sampleRate*dur);
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * Math.pow(1-i/bufferSize, 2.2); }
-    const noise = ctx.createBufferSource(); noise.buffer=buffer;
-    const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1400; bp.Q.value=0.6;
-    const g = ctx.createGain(); g.gain.value=0.25;
-    noise.connect(bp); bp.connect(g); g.connect(ctx.destination);
-    noise.start();
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      const dur = 0.07;
+      const bufferSize = Math.floor(ctx.sampleRate*dur);
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * Math.pow(1-i/bufferSize, 2.2); }
+      const noise = ctx.createBufferSource(); noise.buffer=buffer;
+      const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1400; bp.Q.value=0.6;
+      const g = ctx.createGain(); g.gain.value=0.25;
+      noise.connect(bp); bp.connect(g); g.connect(ctx.destination);
+      noise.start();
     }catch(e){}
   }
+
   function playHitTone(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    const osc = ctx.createOscillator(); osc.type='triangle';
-    const g = ctx.createGain();
-    osc.frequency.setValueAtTime(700, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime+0.08);
-    g.gain.setValueAtTime(0.14, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.15);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime+0.16);
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      const osc = ctx.createOscillator(); osc.type='triangle';
+      const g = ctx.createGain();
+      osc.frequency.setValueAtTime(700, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime+0.08);
+      g.gain.setValueAtTime(0.14, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.15);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime+0.16);
     }catch(e){}
   }
+
   function playClick(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    const osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=520;
-    const g = ctx.createGain(); g.gain.setValueAtTime(0.1, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime+0.09);
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      const osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=520;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.1, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime+0.09);
     }catch(e){}
   }
+
   function playVictory(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    [523,659,784,1046].forEach((f,i)=>{
-      const osc=ctx.createOscillator(); osc.type='triangle'; osc.frequency.value=f;
-      const g=ctx.createGain();
-      const t0 = ctx.currentTime + i*0.09;
-      g.gain.setValueAtTime(0.001, t0);
-      g.gain.linearRampToValueAtTime(0.13, t0+0.03);
-      g.gain.exponentialRampToValueAtTime(0.001, t0+0.35);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(t0); osc.stop(t0+0.4);
-    });
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      [523,659,784,1046].forEach((f,i)=>{
+        const osc=ctx.createOscillator(); osc.type='triangle'; osc.frequency.value=f;
+        const g=ctx.createGain();
+        const t0 = ctx.currentTime + i*0.09;
+        g.gain.setValueAtTime(0.001, t0);
+        g.gain.linearRampToValueAtTime(0.13, t0+0.03);
+        g.gain.exponentialRampToValueAtTime(0.001, t0+0.35);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0+0.4);
+      });
     }catch(e){}
   }
+
   function playDefeat(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    const osc = ctx.createOscillator(); osc.type='sawtooth';
-    const g = ctx.createGain();
-    osc.frequency.setValueAtTime(220, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime+0.5);
-    g.gain.setValueAtTime(0.12, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.55);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime+0.6);
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      const osc = ctx.createOscillator(); osc.type='sawtooth';
+      const g = ctx.createGain();
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime+0.5);
+      g.gain.setValueAtTime(0.12, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.55);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime+0.6);
     }catch(e){}
   }
+
   function playBirdChirp(){
     try{
-    ensureAudio();
-    const ctx = audioCtx;
-    [0, 0.12].forEach((delay,i)=>{
-      const osc = ctx.createOscillator(); osc.type='sine';
-      const g = ctx.createGain();
-      const t0 = ctx.currentTime + delay;
-      const base = 1800 + Math.random()*400;
-      osc.frequency.setValueAtTime(base, t0);
-      osc.frequency.exponentialRampToValueAtTime(base*1.3, t0+0.06);
-      g.gain.setValueAtTime(0.001, t0);
-      g.gain.linearRampToValueAtTime(0.035, t0+0.015);
-      g.gain.exponentialRampToValueAtTime(0.001, t0+0.11);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(t0); osc.stop(t0+0.12);
-    });
-  
+      ensureAudio();
+      const ctx = audioCtx;
+      [0, 0.12].forEach((delay,i)=>{
+        const osc = ctx.createOscillator(); osc.type='sine';
+        const g = ctx.createGain();
+        const t0 = ctx.currentTime + delay;
+        const base = 1800 + Math.random()*400;
+        osc.frequency.setValueAtTime(base, t0);
+        osc.frequency.exponentialRampToValueAtTime(base*1.3, t0+0.06);
+        g.gain.setValueAtTime(0.001, t0);
+        g.gain.linearRampToValueAtTime(0.035, t0+0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, t0+0.11);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0+0.12);
+      });
     }catch(e){}
   }
 
@@ -603,46 +760,48 @@
     c.style.top = top+'%';
     c.style.left = '-120px';
     clouds.appendChild(c);
-    const dur = 15000 + Math.random()*9000; /* faster clouds */
+    const dur = 15000 + Math.random()*9000;
     const arenaW = arena.clientWidth;
     const start = performance.now();
+
     function move(now){
       if(!c.isConnected) return;
       const p = Math.min(1,(now-start)/dur);
       c.style.left = (-120 + p*(arenaW+220)) + 'px';
       if(p<1) requestAnimationFrame(move); else c.remove();
     }
+
     requestAnimationFrame(move);
   }
 
-function spawnBird(){
-  if(!running) return;
-  const b = document.createElement('div');
-  b.className='bird'; b.textContent='˅';
-  const top = 6+Math.random()*10;
-  b.style.top = top+'%';
-  b.style.left = '-20px';
-  skyDecor.appendChild(b);
-  if(Math.random()<0.7) playBirdChirp();
-  const dur = 7000+Math.random()*3000;
-  const arenaW = arena.clientWidth;
-  const start = performance.now();
+  function spawnBird(){
+    if(!running) return;
+    const b = document.createElement('div');
+    b.className='bird'; b.textContent='˅';
+    const top = 6+Math.random()*10;
+    b.style.top = top+'%';
+    b.style.left = '-20px';
+    skyDecor.appendChild(b);
+    if(Math.random()<0.7) playBirdChirp();
+    const dur = 7000+Math.random()*3000;
+    const arenaW = arena.clientWidth;
+    const start = performance.now();
 
-  function move(now){
-    if(!b.isConnected) return;
-    const p = Math.min(1,(now-start)/dur);
-    b.style.left = (-20 + p*(arenaW+40)) + 'px';
-    if(p<1) requestAnimationFrame(move);
-    else b.remove();
+    function move(now){
+      if(!b.isConnected) return;
+      const p = Math.min(1,(now-start)/dur);
+      b.style.left = (-20 + p*(arenaW+40)) + 'px';
+      if(p<1) requestAnimationFrame(move);
+      else b.remove();
+    }
+
+    requestAnimationFrame(move);
   }
-
-  requestAnimationFrame(move);
-}
 
   function spawnDecoyHeli(){
     if(!running) return;
     const d = document.createElement('div');
-    d.className='decoy-heli'; d.textContent='🌈🌈🌈🌈';
+    d.className='decoy-heli'; d.textContent='🎈🎈🎈🎈';
     const top = 16+Math.random()*8;
     const dir = Math.random()<0.5;
     d.style.top = top+'%';
@@ -652,6 +811,7 @@ function spawnBird(){
     const dur = 8000+Math.random()*4000;
     const arenaW = arena.clientWidth;
     const start = performance.now();
+
     function move(now){
       if(!d.isConnected) return;
       const p = Math.min(1,(now-start)/dur);
@@ -659,19 +819,23 @@ function spawnBird(){
       d.style.left = x + 'px';
       if(p<1) requestAnimationFrame(move); else d.remove();
     }
+
     requestAnimationFrame(move);
   }
 
   function startAmbientLoops(){
-  clouds.innerHTML=''; skyDecor.innerHTML='';
-  spawnCloud(); spawnCloud();
-  cloudTimer = setInterval(spawnCloud, 6000);
-  birdTimer = setInterval(()=>{ if(Math.random()<0.6) spawnBird(); }, 13000);
-  decoyTimer = setInterval(()=>{ if(Math.random()<0.5) spawnDecoyHeli(); }, 20000);
-  setTimeout(spawnDecoyHeli, 4000);
+    clouds.innerHTML=''; skyDecor.innerHTML='';
+    spawnCloud(); spawnCloud();
+    cloudTimer = setInterval(spawnCloud, 6000);
+    birdTimer = setInterval(()=>{ if(Math.random()<0.6) spawnBird(); }, 13000);
+    decoyTimer = setInterval(()=>{ if(Math.random()<0.5) spawnDecoyHeli(); }, 20000);
+    setTimeout(spawnDecoyHeli, 4000);
   }
+
   function stopAmbientLoops(){
-    clearInterval(cloudTimer); clearInterval(birdTimer); clearInterval(decoyTimer);
+    clearInterval(cloudTimer);
+    clearInterval(birdTimer);
+    clearInterval(decoyTimer);
   }
 
   /* ---------- core game ---------- */
@@ -681,6 +845,44 @@ function spawnBird(){
     buildSkyline();
     updateHUD();
     resultBlock.classList.remove('show');
+  }
+
+  /*
+   * New game lobby / intro sequence.
+   * Instruction stays for 5 seconds, then "let's save the city",
+   * then the existing game starts.
+   */
+  function startGameWithIntro(){
+
+    const intro = document.getElementById('gameIntro');
+    const instruction = document.getElementById('introInstruction');
+    const begin = document.getElementById('introBegin');
+
+    /* show the game screen without starting gameplay */
+    showScreen('game');
+
+    /* reset the lobby */
+    intro.classList.add('show');
+    instruction.style.display = 'block';
+    begin.style.display = 'none';
+
+    /* instruction scene stays visible for 5 seconds */
+    setTimeout(()=>{
+
+      instruction.style.display = 'none';
+      begin.style.display = 'block';
+
+      /* show "let's save the city" */
+      setTimeout(()=>{
+
+        intro.classList.remove('show');
+
+        /* now start the real game */
+        startGame();
+
+      },1200);
+
+    },5000);
   }
 
   function startGame(){
@@ -704,7 +906,7 @@ function spawnBird(){
   function heliSVG(color, dur){
     const pal = Object.assign({}, HELI_PAL, {M: color});
     const body = pixelSVG(heliRows(), pal, 3);
-    // spinning rotor drawn as an overlay so it can animate
+
     const rotor = '<svg class="rotor" viewBox="0 0 37 17" width="111" height="51" '
       + 'shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">'
       + '<g transform="translate(18.5,3)">'
@@ -712,13 +914,16 @@ function spawnBird(){
       + '<animateTransform attributeName="transform" type="rotate" from="0" to="360" '
       + 'dur="' + dur + 's" repeatCount="indefinite"/>'
       + '</rect></g></svg>';
+
     return '<div class="heliInner">' + body + rotor + '</div>';
   }
 
   function spawnHeli(){
     if(!running || kills>=TOTAL) return;
+
     const el = document.createElement('div');
     el.className = 'heli';
+
     const color = HELI_COLORS[Math.floor(Math.random()*HELI_COLORS.length)];
     el.innerHTML = heliSVG(color, 0.26 - Math.min(kills*0.012, 0.12));
 
@@ -726,13 +931,25 @@ function spawnBird(){
     const arenaH = arena.clientHeight;
     const startX = 50 + Math.random()*(arenaW-100);
     const startY = arenaH*0.14;
+
     el.style.left = startX+'px';
     el.style.top = startY+'px';
     arena.appendChild(el);
 
-    const heli = { el, x:startX, y:startY, speed: 1.9 + Math.random()*1.2 + kills*0.28, alive:true };
+    const heli = {
+      el,
+      x:startX,
+      y:startY,
+      speed: 1.9 + Math.random()*1.2 + kills*0.28,
+      alive:true
+    };
+
     helis.push(heli);
-    el.addEventListener('click', (e)=>{ e.stopPropagation(); handleShot(heli); });
+
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      handleShot(heli);
+    });
   }
 
   function handleShot(heli){
@@ -752,10 +969,12 @@ function spawnBird(){
 
     heli.alive=false;
     heli.el.classList.add('hit');
+
     setTimeout(()=>{
       spawnImpact(tx,ty);
       heli.el.remove();
     }, 160);
+
     helis = helis.filter(t=>t!==heli);
     kills++;
     updateHUD();
@@ -776,50 +995,66 @@ function spawnBird(){
 
   function fireBullet(x1,y1,x2,y2){
     playGunfire();
+
     const flash = document.createElement('div');
-    flash.className='flash'; flash.textContent='💥';
-    flash.style.left=(x1-11)+'px'; flash.style.top=(y1-11)+'px';
+    flash.className='flash';
+    flash.textContent='💥';
+    flash.style.left=(x1-11)+'px';
+    flash.style.top=(y1-11)+'px';
     arena.appendChild(flash);
     setTimeout(()=>flash.remove(),150);
 
     const bullet = document.createElement('div');
     bullet.className='bullet';
+
     const dx = x2-x1, dy = y2-y1;
     const angle = Math.atan2(dy,dx)*180/Math.PI;
-    bullet.style.left=x1+'px'; bullet.style.top=y1+'px';
+
+    bullet.style.left=x1+'px';
+    bullet.style.top=y1+'px';
     bullet.style.transform = 'rotate('+angle+'deg)';
     bullet.style.transformOrigin='0 50%';
+
     arena.appendChild(bullet);
 
     const dur=90;
     const start=performance.now();
+
     function anim(now){
       const p = Math.min(1,(now-start)/dur);
       bullet.style.left=(x1+dx*p)+'px';
       bullet.style.top=(y1+dy*p)+'px';
+
       if(p<1) requestAnimationFrame(anim);
       else bullet.remove();
     }
+
     requestAnimationFrame(anim);
   }
 
   function spawnImpact(x,y){
     const ring = document.createElement('div');
     ring.className='flashRing';
-    ring.style.left=x+'px'; ring.style.top=y+'px';
+    ring.style.left=x+'px';
+    ring.style.top=y+'px';
     arena.appendChild(ring);
     setTimeout(()=>ring.remove(),320);
 
     const colors=['#ffd28a','#ff8a3d','#fff','#ff5555'];
+
     for(let i=0;i<6;i++){
       const p = document.createElement('div');
       p.className='particleBit';
+
       const angle = Math.random()*Math.PI*2;
       const dist = 20+Math.random()*30;
+
       p.style.setProperty('--dx', (Math.cos(angle)*dist)+'px');
       p.style.setProperty('--dy', (Math.sin(angle)*dist)+'px');
-      p.style.left=x+'px'; p.style.top=y+'px';
+      p.style.left=x+'px';
+      p.style.top=y+'px';
       p.style.background = colors[Math.floor(Math.random()*colors.length)];
+
       arena.appendChild(p);
       setTimeout(()=>p.remove(),460);
     }
@@ -829,12 +1064,16 @@ function spawnBird(){
     for(let i=0;i<14;i++){
       const b = document.createElement('div');
       b.className='burst';
+
       const angle = Math.random()*Math.PI*2;
       const dist = 40+Math.random()*90;
+
       b.style.setProperty('--dx', (Math.cos(angle)*dist)+'px');
       b.style.setProperty('--dy', (Math.sin(angle)*dist)+'px');
-      b.style.left = '50%'; b.style.top='40%';
+      b.style.left = '50%';
+      b.style.top='40%';
       b.style.animationDelay = (Math.random()*0.2)+'s';
+
       overScr.appendChild(b);
       setTimeout(()=>b.remove(), 1200);
     }
@@ -842,17 +1081,20 @@ function spawnBird(){
 
   function tick(){
     if(!running) return;
+
     const arenaH = arena.clientHeight;
     const groundY = arenaH*0.86;
     const startY = arenaH*0.14;
 
     for(const heli of helis.slice()){
       if(!heli.alive) continue;
+
       heli.y += heli.speed;
       heli.el.style.top = heli.y+'px';
 
       const progress = Math.min(1, (heli.y-startY)/(groundY-startY));
       const scale = 0.4 + progress*0.6;
+
       heli.el.style.transform = 'translate(-50%,-50%) scale('+scale+')';
 
       if(heli.y >= groundY){
@@ -860,6 +1102,7 @@ function spawnBird(){
         return;
       }
     }
+
     rafId = requestAnimationFrame(tick);
   }
 
@@ -869,6 +1112,7 @@ function spawnBird(){
     cancelAnimationFrame(rafId);
     stopHeliSound();
     stopAmbientLoops();
+
     helis.forEach(t=>t.el.remove());
     helis=[];
 
@@ -880,29 +1124,60 @@ function spawnBird(){
       document.getElementById('retryBtn').textContent = 'play again';
       playVictory();
       setTimeout(spawnWinBurst, 100);
+
     } else {
       overScr.classList.remove('win');
       overTitle.textContent = 'great job boss';
       finalStats.innerHTML = 'we needed your help...but yeah, here we are.<br>maybe next time, try again';
+
       document.getElementById('retryBtn').textContent = 'try again boss';
       playDefeat();
     }
 
     resultLine.textContent = kills+' / '+TOTAL+' targets down';
+
     showScreen('gameover');
-    setTimeout(()=>resultBlock.classList.add('show'), 50);
+
+    setTimeout(()=>{
+      resultBlock.classList.add('show');
+    }, 50);
   }
 
   // build the pixel character now that sprite data is defined
   player.innerHTML = pixelSVG(CHAR_ROWS, CHAR_PAL, 5);
   playerSvg = player.querySelector('svg');
 
-  document.getElementById('playBtn').addEventListener('click', ()=>{ playClick(); startGame(); });
-  document.getElementById('howtoBtn').addEventListener('click', ()=>{ playClick(); showScreen('howto'); });
-  document.getElementById('howtoPlayBtn').addEventListener('click', ()=>{ playClick(); startGame(); });
-  document.getElementById('howtoBackBtn').addEventListener('click', ()=>{ playClick(); showScreen('welcome'); });
-  document.getElementById('retryBtn').addEventListener('click', ()=>{ playClick(); startGame(); });
-  document.getElementById('menuBtn').addEventListener('click', ()=>{ playClick(); showScreen('welcome'); });
+  /* ---------- buttons ---------- */
+  document.getElementById('playBtn').addEventListener('click', ()=>{
+    playClick();
+    startGameWithIntro();
+  });
+
+  document.getElementById('howtoBtn').addEventListener('click', ()=>{
+    playClick();
+    showScreen('howto');
+  });
+
+  document.getElementById('howtoPlayBtn').addEventListener('click', ()=>{
+    playClick();
+    startGameWithIntro();
+  });
+
+  document.getElementById('howtoBackBtn').addEventListener('click', ()=>{
+    playClick();
+    showScreen('welcome');
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', ()=>{
+    playClick();
+    startGame();
+  });
+
+  document.getElementById('menuBtn').addEventListener('click', ()=>{
+    playClick();
+    showScreen('welcome');
+  });
+
 })();
 </script>
 </body>
